@@ -1,378 +1,322 @@
-นี่คือแอพ **"Thai Food Fusion Generator (แอพสุ่มฟิวชั่นอาหารไทย)"** ฉบับสมบูรณ์ครับ
-
-เวอร์ชันนี้ผมออกแบบให้เป็นธีม **"Modern Gastronomy"** (สีส้มอิฐตัดกับสีเทาเข้ม) ให้ความรู้สึกเหมือนครัวเชฟมืออาชีพ รองรับข้อมูลทั้ง **12 หมวด** ที่คุณให้มาครบถ้วน รวมถึงเมนูตั้งต้นทั้งไทยและเทศครับ
-
-### 🥘 โค้ดแอพ (Copy ไปใช้ได้เลย)
-
-```html
 <!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thai Food Fusion Generator</title>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #fdf6e3; /* สีครีมอ่อน */
+            --bg-color: #f4f1ea;
+            --primary: #c0392b; /* Chili Red */
+            --secondary: #2c3e50; /* Slate */
+            --accent: #27ae60; /* Basil Green */
             --card-bg: #ffffff;
-            --primary: #d35400; /* สีส้มอิฐ (Pumpkin) */
-            --secondary: #2c3e50; /* สีน้ำเงินเข้ม */
-            --accent: #27ae60; /* สีเขียวใบกะเพรา */
-            --text: #2d3436;
+            --text-color: #333;
         }
 
         body {
-            font-family: 'Kanit', sans-serif;
+            font-family: 'Sarabun', sans-serif;
             background-color: var(--bg-color);
-            color: var(--text);
-            text-align: center;
-            padding: 20px;
+            color: var(--text-color);
             margin: 0;
-            background-image: radial-gradient(#e67e22 5%, transparent 5%);
-            background-size: 30px 30px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            background-image: radial-gradient(#d5d5d5 1px, transparent 1px);
+            background-size: 20px 20px;
         }
 
         h1 {
             color: var(--primary);
-            text-shadow: 2px 2px 0px #fff;
+            font-size: 2rem;
             margin-bottom: 5px;
-            font-size: 2.2rem;
-            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-align: center;
         }
-        
-        p.subtitle { font-size: 1.1rem; color: var(--secondary); margin-bottom: 25px; opacity: 0.8; }
 
-        /* Grid Layout for 12 Items */
-        .grid-container {
+        p.subtitle {
+            color: #7f8c8d;
+            margin-bottom: 25px;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 12px;
-            max-width: 1200px;
-            margin: 0 auto 30px auto;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
         }
 
         .slot-box {
             background: var(--card-bg);
-            border-radius: 12px;
-            padding: 12px;
-            position: relative;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 15px;
+            border-radius: 8px;
             border-left: 5px solid var(--secondary);
-            transition: 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
-            text-align: left;
+            justify-content: center;
+            min-height: 80px;
+            transition: transform 0.2s;
         }
-
-        .slot-box:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.15); }
-
-        .slot-box.locked {
-            border-left-color: var(--primary);
-            background-color: #fff5e6;
-        }
-
-        .header-row {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            align-items: center;
-            margin-bottom: 8px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 5px;
-        }
-
-        .label { font-size: 0.8rem; color: #7f8c8d; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
-
-        .lock-btn {
-            background: none; border: none; font-size: 1.1rem; cursor: pointer; opacity: 0.4; transition: 0.2s;
-        }
-        .slot-box.locked .lock-btn { opacity: 1; transform: scale(1.1); }
-
-        .value { 
-            font-size: 1rem; font-weight: 600; color: var(--secondary); 
-            min-height: 2.4em; display: flex; align-items: center; 
-            width: 100%; word-break: break-word; line-height: 1.3;
-        }
+        
+        .slot-box:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
 
         /* Highlight specific boxes */
-        #box0 .value { color: var(--primary); font-size: 1.1rem; } /* Meat */
-        #box11 .value { color: var(--accent); font-size: 1.1rem; } /* Menu */
+        .box-thai { border-left-color: var(--primary); }
+        .box-inter { border-left-color: var(--secondary); }
+        .box-meat { border-left-color: #e67e22; }
+        .box-plate { border-left-color: var(--accent); }
 
-        /* Select Style */
-        select.custom-select {
-            font-family: 'Kanit', sans-serif;
-            font-size: 0.95rem;
-            width: 100%;
-            padding: 5px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            background-color: #f9f9f9;
-            color: var(--text);
-            outline: none;
+        .label {
+            font-size: 0.75rem;
+            color: #95a5a6;
+            font-weight: 700;
+            text-transform: uppercase;
             margin-bottom: 5px;
         }
-        select.custom-select:focus { border-color: var(--primary); }
 
-        /* Result Section */
+        .value {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-color);
+            line-height: 1.3;
+        }
+
         .result-section {
-            background: white; border-radius: 15px; padding: 25px;
-            max-width: 900px; margin: 0 auto; box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            position: relative; overflow: hidden; border-top: 5px solid var(--primary);
+            background: #fff;
+            width: 100%;
+            max-width: 800px;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            margin-top: 10px;
+            border-top: 5px solid var(--primary);
+            position: relative;
         }
 
-        #finalSentence { font-size: 1.15rem; line-height: 1.8; color: var(--secondary); margin-bottom: 20px; text-align: left; }
-
-        .btn-group { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
-        
-        button.action-btn {
-            padding: 12px 30px; font-family: 'Kanit', sans-serif; font-size: 1.2rem;
-            border: none; border-radius: 50px; cursor: pointer; transition: 0.2s;
-            font-weight: bold; display: flex; align-items: center; gap: 10px;
+        #finalSentence {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #2c3e50;
+            white-space: pre-line;
         }
 
-        .spin-btn { background: linear-gradient(45deg, #d35400, #e67e22); color: white; box-shadow: 0 5px 15px rgba(211, 84, 0, 0.3); }
-        .spin-btn:hover { transform: translateY(-2px); }
-        .spin-btn:active { transform: translateY(1px); }
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            justify-content: center;
+        }
 
-        .copy-btn { background-color: var(--secondary); color: white; }
-        .copy-btn:hover { background-color: #34495e; }
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 50px;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            text-transform: uppercase;
+        }
+
+        .spin-btn {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(192, 57, 43, 0.3);
+            flex: 2;
+        }
+
+        .copy-btn {
+            background-color: var(--secondary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(44, 62, 80, 0.3);
+            flex: 1;
+        }
+
+        button:hover { transform: scale(1.02); opacity: 0.9; }
+        button:active { transform: scale(0.98); }
 
     </style>
 </head>
 <body>
 
-    <h1>🔥 Thai Food Fusion Lab 🔥</h1>
-    <p class="subtitle">ระบบสุ่มเมนูฟิวชั่น สร้างสรรค์ไอเดียไร้ขีดจำกัด</p>
+    <h1>🌶️ Thai Fusion Master</h1>
+    <p class="subtitle">ระบบสุ่มเมนูฟิวชั่นไทย-อินเตอร์ระดับ Gastronomy</p>
 
-    <div class="grid-container">
-        <div class="slot-box" id="box0">
-            <div class="header-row"><span class="label">🥩 1. วัตถุดิบหลัก (เลือกได้)</span></div>
-            <select id="meatSelect" class="custom-select" onchange="updateSentence()">
-                <option value="random">🎲 สุ่มวัตถุดิบ (Random)</option>
-            </select>
-            <div class="value" id="s0" style="display:none;">?</div>
-        </div>
+    <div class="container">
+        <div class="slot-box box-thai"><div class="label">1. เมนูไทย (Thai Base)</div><div class="value" id="s1">...</div></div>
+        
+        <div class="slot-box box-inter"><div class="label">2. เมนูอินเตอร์ (Fusion With)</div><div class="value" id="s2">...</div></div>
+        
+        <div class="slot-box box-meat"><div class="label">3. วัตถุดิบหลัก (Meat)</div><div class="value" id="s3">...</div></div>
+        
+        <div class="slot-box"><div class="label">4. สไตล์ (Style)</div><div class="value" id="s4">...</div></div>
+        
+        <div class="slot-box"><div class="label">5. เทคนิคปรุง (Technique)</div><div class="value" id="s11">...</div></div>
 
-        <div class="slot-box" id="box11">
-             <div class="header-row"><span class="label">🍲 2. เมนูตั้งต้น</span><button class="lock-btn" onclick="toggleLock(11)" id="lock11">🔓</button></div>
-             <div class="value" id="s11">?</div>
-        </div>
+        <div class="slot-box box-plate"><div class="label">6. การจัดจาน (Plating)</div><div class="value" id="s12">...</div></div>
+        
+        <div class="slot-box"><div class="label">7. รสหลัก (Main Taste)</div><div class="value" id="s8">...</div></div>
+        
+        <div class="slot-box"><div class="label">8. ตัวดันรส (Enhancer)</div><div class="value" id="s9">...</div></div>
 
-        <div class="slot-box" id="box1">
-            <div class="header-row"><span class="label">🍳 3. สไตล์</span><button class="lock-btn" onclick="toggleLock(1)" id="lock1">🔓</button></div>
-            <div class="value" id="s1">?</div>
-        </div>
+        <div class="slot-box"><div class="label">9. ตัวตัดเลี่ยน (Cleanser)</div><div class="value" id="s10">...</div></div>
+        
+        <div class="slot-box"><div class="label">10. โทน/อารมณ์ (Mood)</div><div class="value" id="s6">...</div></div>
 
-        <div class="slot-box" id="box9">
-             <div class="header-row"><span class="label">🔥 4. เทคนิคปรุง</span><button class="lock-btn" onclick="toggleLock(9)" id="lock9">🔓</button></div>
-             <div class="value" id="s9">?</div>
-        </div>
+        <div class="slot-box"><div class="label">11. ห้ามใส่ (No Ingredient)</div><div class="value" id="s5">...</div></div>
 
-        <div class="slot-box" id="box10">
-             <div class="header-row"><span class="label">🎨 5. การจัดจาน</span><button class="lock-btn" onclick="toggleLock(10)" id="lock10">🔓</button></div>
-             <div class="value" id="s10">?</div>
-        </div>
-
-        <div class="slot-box" id="box7">
-            <div class="header-row"><span class="label">👅 6. รสหลัก</span><button class="lock-btn" onclick="toggleLock(7)" id="lock7">🔓</button></div>
-            <div class="value" id="s7">?</div>
-        </div>
-
-        <div class="slot-box" id="box3">
-            <div class="header-row"><span class="label">🌫️ 7. โทน/มู้ด</span><button class="lock-btn" onclick="toggleLock(3)" id="lock3">🔓</button></div>
-            <div class="value" id="s3">?</div>
-        </div>
-
-        <div class="slot-box" id="box6">
-            <div class="header-row"><span class="label">✨ 8. ตัวดันรส</span><button class="lock-btn" onclick="toggleLock(6)" id="lock6">🔓</button></div>
-            <div class="value" id="s6">?</div>
-        </div>
-
-        <div class="slot-box" id="box8">
-            <div class="header-row"><span class="label">🍋 9. ตัวตัดเลี่ยน</span><button class="lock-btn" onclick="toggleLock(8)" id="lock8">🔓</button></div>
-            <div class="value" id="s8">?</div>
-        </div>
-
-        <div class="slot-box" id="box4">
-            <div class="header-row"><span class="label">🎯 10. คนกิน</span><button class="lock-btn" onclick="toggleLock(4)" id="lock4">🔓</button></div>
-            <div class="value" id="s4">?</div>
-        </div>
-
-        <div class="slot-box" id="box2">
-            <div class="header-row"><span class="label">🚫 11. ข้อห้าม</span><button class="lock-btn" onclick="toggleLock(2)" id="lock2">🔓</button></div>
-            <div class="value" id="s2">?</div>
-        </div>
-
-        <div class="slot-box" id="box5">
-            <div class="header-row"><span class="label">🤫 12. ห้ามกลบ</span><button class="lock-btn" onclick="toggleLock(5)" id="lock5">🔓</button></div>
-            <div class="value" id="s5">?</div>
-        </div>
+        <div class="slot-box"><div class="label">12. ห้ามกลบ (Don't Mask)</div><div class="value" id="s8_2">...</div></div>
+        
+        <div class="slot-box"><div class="label">13. เป้าหมาย (Target)</div><div class="value" id="s7">...</div></div>
     </div>
 
     <div class="result-section">
-        <div id="finalSentence">กดปุ่ม "GENERATE" เพื่อเริ่มสุ่มเมนูฟิวชั่น... 👇</div>
+        <div id="finalSentence">พร้อมแล้ว... กดปุ่มด้านล่างเพื่อเริ่ม Challenge! 👇</div>
         <div class="btn-group">
-            <button class="action-btn spin-btn" onclick="spin()" id="spinBtn">🚀 GENERATE</button>
-            <button class="action-btn copy-btn" onclick="copyText()">📋 คัดลอก</button>
+            <button class="spin-btn" onclick="spin()">🔥 Random Fusion</button>
+            <button class="copy-btn" onclick="copyText()">📋 Copy</button>
         </div>
     </div>
 
     <script>
-        // --- DATASETS ---
+        // --- DATABASE ---
+        const d_thai = [
+            "Tom Yum Soup (ต้มยำ)", "Pad Thai (ผัดไทย)", "Green Curry with Tofu (แกงเขียวหวานเต้าหู้)", "Mango Sticky Rice (ข้าวเหนียวมะม่วง)", "Som Tum (ส้มตำ)", 
+            "Thai Spring Rolls (ปอเปี๊ยะสด)", "Crispy Vegetarian Spring Rolls (ปอเปี๊ยะทอด)", "Pad See Ew (ผัดซีอิ๊ว)", "Thai Basil Fried Rice (ข้าวผัดกะเพรา)", 
+            "Vegetarian Thai Green Curry (แกงเขียวหวานเจ)", "Spicy Papaya Salad (ส้มตำปูม้า)", "Vegetarian Massaman Curry (แกงมัสมั่นเจ)", "Sticky Rice with Coconut Milk (ข้าวเหนียวทุเรียน)", 
+            "Vegetarian Thai Red Curry (แกงแดงเจ)", "Thai Sweet Chili Tofu (เต้าหู้ทอดราดน้ำจิ้มหวาน)", "Khao Pad (ข้าวผัด)", "Pad Krapow with Tofu (ผัดกะเพราเต้าหู้)", 
+            "Fried Vegetarian Dumplings (เกี๊ยวทอดเจ)", "Thai Sweet Potato Balls (มันเทศทอด)", "Larb Salad with Tofu (ลาบเต้าหู้)", "Thai Coconut Soup (ต้มข่า)", 
+            "Thai Grilled Tofu Skewers (เต้าหู้ย่างไม้เสียบ)", "Vegetarian Stir Fried Water Spinach (ผัดผักบุ้งไฟแดง)", "Thai Spicy Eggplant Stir-fry (ผัดมะเขือยาว)", 
+            "Chili and Garlic Stir-fried Mushrooms (ผัดเห็ดกระเทียม)", "Vegetarian Thai Salad (สลัดไทยเจ)", "Thai Bean Sprout Salad (สลัดถั่วงอก)", 
+            "Vegetarian Thai Noodles (ก๋วยเตี๋ยวเจ)", "Rice Noodles with Tofu (ก๋วยเตี๋ยวหมูเต้าหู้)", "Tom Kha with Tofu (ต้มข่าเต้าหู้)"
+        ];
+
+        const d_inter = [
+            "Vegetable Paella (ปาเอย่าแบบผัก)", "Vegan Burritos (เบอร์ริโต้วีแกน)", "Vegetable Samosas (ซาโมซ่าผัก)", "Falafel with Hummus (ฟาลาเฟลกับฮัมมัส)", 
+            "Mushroom Risotto (รีซอตโตเห็ด)", "Vegan Pizza (พิซซ่าแบบวีแกน)", "Vegan Sushi (ซูชิวีแกน)", "Pasta Primavera (พาสต้าโพรวิเดนเซีย)", "Tofu Stir-Fry (ผัดเต้าหู้)", 
+            "Vegan Caesar Salad (สลัดซีซาร์วีแกน)", "Vegetarian Shepherd’s Pie (เชฟเพิร์ดพายแบบผัก)", "Vegetarian Tacos (ทาโก้ผัก)", "Grilled Vegetable Kebabs (ข้าวย่างผักเสียบไม้)", 
+            "Eggplant Parmesan (พาร์เมซานมะเขือยาว)", "Vegetarian Chili (ชิลีผัก)", "Vegan Burrito Bowl (โบลว์เบอร์ริโตวีแกน)", "Tofu Scramble (เต้าหู้สแครมเบิล)", 
+            "Vegan Lentil Soup (ซุปเลนทิลวีแกน)", "Veggie Burger (เบอร์เกอร์ผัก)", "Vegetarian Moussaka (มูซาคาแบบผัก)", "Vegan Mushroom Wellington (เห็ดเวลลิงตันวีแกน)", 
+            "Cucumber and Avocado Sandwich (แซนด์วิชแตงกวากับอโวคาโด)", "Vegan Banh Mi (บั๋นหมี่วีแกน)", "Zucchini Fritters (ฟริทเทอร์ซูกินี)", 
+            "Stuffed Bell Peppers (พริกหยวกสอดไส้)", "Vegan Thai Curry (แกงเผ็ดวีแกน)", "Vegan Goulash (กูลาชวีแกน)", "Vegan Dumplings (เกี๊ยววีแกน)", 
+            "Vegan French Onion Soup (ซุปหัวหอมฝรั่งเศสวีแกน)", "Vegetarian Sushi Rolls (ซูชิผัก)"
+        ];
+
         const d_meat = [
-            // Chicken
             "🐔 อกไก่", "🍗 น่องไก่", "🐓 ปีกไก่", "🦶 ตีนไก่", "🧣 คอไก่", "🥩 สันในไก่", "🍢 ตับไก่", "❤️ หัวใจไก่", "🥘 กระเพาะไก่", "🥓 หนังไก่",
-            // Pork
-            "🐷 สันในหมู", "🐖 สันนอกหมู", "🥓 หมูกรอบ", "🥩 เนื้อสะโพกหมู", "🥣 เนื้อหมูบด", "🍖 หมูบาร์บีคิว (ซี่โครง)", "🥣 หมูหมัก", "🍢 ตับหมู", "❤️ หัวใจหมู", "🥩 ไตหมู", "🥘 กระเพาะหมู", "👅 ลิ้นหมู", "🥓 หนังหมู", "🦴 กระดูกหมู",
-            // Shrimp & Shellfish
+            "🐷 สันในหมู", "🐖 สันนอกหมู", "🥓 หมูกรอบ", "🥩 เนื้อสะโพกหมู", "🥣 เนื้อหมูบด", "🍖 หมูบาร์บีคิว", "🥣 หมูหมัก", "🍢 ตับหมู", "❤️ หัวใจหมู", "🥩 ไตหมู", "🥘 กระเพาะหมู", "👅 ลิ้นหมู", "🥓 หนังหมู", "🦴 กระดูกหมู",
             "🦐 กุ้งขาว", "🦐 กุ้งแม่น้ำ", "🍤 กุ้งลายเสือ", "🌊 กุ้งทะเล", "🇦🇺 กุ้งออสเตรเลีย", "🦞 กุ้งมังกร", "🔴 กุ้งแดง", "💎 กุ้งแก้ว", "🦐 กุ้งก้ามกราม",
-            "🐚 หอยเป๋าฮื้อ", "🦪 หอยนางรม", "🐚 หอยแมลงภู่", "🥘 หอยกาบ", "🐚 หอยลาย", "🩸 หอยแครง", "🥘 หอยปีกนก", "🇯🇵 หอยแมลงภู่ญี่ปุ่น",
-            // Duck
             "🦆 อกเป็ด", "🍗 น่องเป็ด", "🥩 สะโพกเป็ด", "🍢 ตับเป็ด", "🥓 หนังเป็ด", "🍑 หางเป็ด",
-            // Crab & Squid
+            "🐚 หอยเป๋าฮื้อ", "🦪 หอยนางรม", "🐚 หอยแมลงภู่", "🥘 หอยกาบ", "🐚 หอยลาย", "🩸 หอยแครง", "🥘 หอยปีกนก", "🇯🇵 หอยแมลงภู่ญี่ปุ่น",
             "🦀 เนื้อปู", "🦀 ขาปู", "🥚 ไข่ปู", "🦑 ปลาหมึกกล้วย", "🐙 ปลาหมึก", "⚫ หมึกดำ", "🦑 ปลาหมึกหอม",
-            // Fish
             "🐟 ปลาทู", "🇯🇵 ปลาซาบะ", "🐟 ปลากะพงขาว", "🐟 ปลานิล", "🐟 ปลาสวาย", "🐟 ปลากราย", "🍣 ปลาแซลมอน", "🐟 ปลาทูน่า", "🐟 ปลาฮามาจิ", "🐟 ปลาสำลี", "🐟 ปลาฮาลิบัต", "🐟 ปลาทับทิม",
             "🥘 หัวปลา", "🥓 หนังปลา", "🥚 ไข่ปลา", "🥓 พุงปลา", "🐟 หางปลา"
         ];
 
-        const d_style = ["🍜 สตรีทฟู้ด", "🥘 ฟิวชั่น", "🌊 ซีฟู้ด", "🍛 แกง", "🍲 ต้ม", "🥗 ยำ", "🍢 ปิ้งย่าง", "🍛 อาหารจานเดียว", "🍢 บาร์บีคิว", "🍵 ซุป", "🍳 อาหารเช้า", "🍽️ ฟินไดนิ่ง", "🥗 อาหารจานเล็ก", "🥗 สลัด", "🥩 สเต็ก", "🍖 เนื้อย่าง", "🍂 เมนูตามฤดูกาล", "🥦 อาหารสุขภาพ", "🍰 ของหวาน", "✨ เมนูพิเศษ", "🥗 มังสวิรัติ", "🍣 ซูชิ", "🍱 บุฟเฟ่ต์", "🍸 ค็อกเทล", "🥢 อาหารจีน", "🍝 อาหารอิตาเลียน", "🥖 อาหารฝรั่งเศส", "🌶️ อาหารไทย", "🇯🇵 อาหารญี่ปุ่น", "🇰🇷 อาหารเกาหลี"];
-
+        const d_style = ["🍜 สตรีทฟู้ด", "🥘 ฟิวชั่น", "🌊 ซีฟู้ด", "🍛 แกง", "🍲 ต้ม", "🥗 ยำ", "🍢 ปิ้งย่าง", "🍛 อาหารจานเดียว", "🍢 บาร์บีคิว", "🍵 ซุป", "🍳 อาหารเช้า", "🍽️ ฟินไดนิ่ง", "🥗 อาหารจานเล็ก", "🥗 สลัด", "🥩 สเต็ก", "🍖 เนื้อย่าง", "🍂 เมนูตามฤดูกาล", "🥦 อาหารสุขภาพ", "🍰 ของหวาน", "✨ เมนูพิเศษ", "🥗 อาหารมังสวิรัติ", "🍣 ซูชิ", "🍱 บุฟเฟ่ต์", "🍸 ค็อกเทล", "🥢 อาหารจีน", "🍝 อาหารอิตาเลียน", "🥖 อาหารฝรั่งเศส", "🌶️ อาหารไทย", "🇯🇵 อาหารญี่ปุ่น", "🇰🇷 อาหารเกาหลี"];
+        
         const d_exclude = ["🥥 กะทิ", "🌽 ข้าวโพด", "🍚 แป้งมันสำปะหลัง", "🍬 น้ำตาลทราย", "🍺 แอลกอฮอล์", "🌶️ พริกแห้ง", "🥩 เนื้อวัว", "🐷 เนื้อหมูดำ", "🥛 ครีม", "🥚 ไข่ไก่", "🧂 น้ำส้มสายชู", "🍞 ขนมปัง", "🧀 ชีส", "🧅 หัวหอม", "🧄 กระเทียม", "🥢 ซอสถั่วเหลือง", "🍦 โยเกิร์ต", "🥢 ซอสแม็กกี้", "🍯 น้ำตาลปี๊บ", "🍫 โกโก้", "🦐 กุ้ง", "🦀 ปู", "🐚 หอย", "🥒 ผักดอง", "🍅 มะเขือเทศ", "🍄 เห็ด", "🐟 น้ำปลา", "🧂 ผงชูรส", "🟡 ขมิ้น", "🦐 กุ้งแห้ง"];
-
+        
         const d_tone = ["🍃 สดชื่น", "🍂 หอมกลิ่นเครื่องเทศ", "🔥 ร้อนแรง", "🍋 เปรี้ยวหวาน", "🧂 เค็มละมุน", "🌶️ เผ็ดจัดจ้าน", "☁️ เนียนนุ่ม", "🤤 กลมกล่อม", "😋 อร่อยง่าย", "🍂 สดชื่นตามฤดูกาล", "🍦 ครีมมี่", "🍾 ซาบซ่า", "🏺 คลาสสิก", "🍲 รสชาติกลมกล่อม", "♨️ เสิร์ฟร้อน", "🍯 ซอสหวานเปรี้ยว", "✨ มหัศจรรย์", "🌸 หวานหอม", "🤰 อิ่มท้อง", "😌 สบายท้อง", "🔥 เผ็ดร้อน", "❄️ เย็นสบาย", "🏡 รสชาติอบอุ่น", "🥘 ฟิวชั่นแปลกใหม่", "🍖 อร่อยเต็มคำ", "✨ ซอสเงา", "🌿 กลิ่นสดชื่น", "💦 ชุ่มฉ่ำ", "🍮 นุ่มละมุน", "💯 อร่อยเต็มรส"];
-
+        
         const d_target = ["👨‍👩‍👧‍👦 ครอบครัว", "💪 คนรักสุขภาพ", "🎓 นักเรียน", "💼 นักธุรกิจ", "✈️ นักท่องเที่ยว", "👴 ผู้สูงอายุ", "👶 เด็กๆ", "👯‍♀️ กลุ่มเพื่อน", "🏋️ นักกีฬา", "💕 คู่รัก", "🌏 ชาวต่างชาติ", "🍻 นักดื่ม", "🏢 พนักงานออฟฟิศ", "🎤 นักร้อง", "✨ เซเลบริตี้", "👷 กลุ่มคนงาน", "🪖 ทหาร", "⛺ นักท่องเที่ยวสายธรรมชาติ", "🎓 นักเรียนนอก", "🦉 คนทำงานกลางคืน"];
-
+        
         const d_dont_mask = ["🥥 กะทิ", "🌶️ เครื่องเทศ", "🍃 กลิ่นหอมของมะกรูด", "🥣 ซอสที่เน้นรสหลัก", "🐟 น้ำปลา", "🐟 ซอสทาโร", "🌶️ กลิ่นเผ็ดพริก", "🌿 สมุนไพร", "🏺 การหมัก", "🍊 น้ำผลไม้", "🥘 กลิ่นต้มยำ", "🍊 ส้ม", "🥥 กลิ่นมะพร้าว", "🌶️ น้ำพริก", "🐟 กลิ่นหอมของปลา", "🍋 น้ำมะนาว", "🌿 กลิ่นสมุนไพรสด", "🍯 น้ำตาลปี๊บ", "🦪 ซอสหอยนางรม", "🌿 กลิ่นของสมุนไพรไทย"];
-
+        
         const d_enhancer = ["🍋 มะนาว", "🍃 ใบมะกรูด", "🦪 ซอสหอยนางรม", "🧀 ชีส", "🥣 มิโสะ", "🧅 หอมแดง", "🧴 น้ำมันงา", "🧄 กระเทียม", "🍯 น้ำตาล", "🧂 พริกไทย", "🥢 ซอสแม็กกี้", "🍊 น้ำส้ม", "🌶️ น้ำจิ้มซีฟู้ด", "🌿 ตะไคร้", "🥗 ผักสด", "🫒 น้ำมันมะกอก", "🌶️ ซอสพริก", "🥜 ถั่วลิสง", "🥣 น้ำซุป", "🧂 น้ำส้มสายชู"];
-
-        const d_taste = ["🌶️ เผ็ด", "🍯 หวาน", "🧂 เค็ม", "🍋 เปรี้ยว", "🥬 ขม", "🤤 อูมามิ", "🍬 น้ำตาล", "🧂 เกลือ", "🔥 เผ็ดร้อน", "🍲 กลมกล่อม", "🍋 น้ำมะนาว", "🥦 ผัก", "🌿 สมุนไพร", "🥣 น้ำซุป", "🥛 ครีม", "🌸 อโรม่า", "🧂 พริกไทย", "🥛 นม", "🍚 ข้าว", "🌿 สมุนไพรสด"];
-
+        
+        const d_flavor = ["🌶️ เผ็ด", "🍯 หวาน", "🧂 เค็ม", "🍋 เปรี้ยว", "🥬 ขม", "🤤 อูมามิ", "🍬 น้ำตาล", "🧂 เกลือ", "🔥 เผ็ดร้อน", "🍲 กลมกล่อม", "🍋 น้ำมะนาว", "🥦 ผัก", "🌿 สมุนไพร", "🥣 น้ำซุป", "🥛 ครีม", "🌸 อโรม่า", "🧂 พริกไทย", "🥛 นม", "🍚 ข้าว", "🌿 สมุนไพรสด"];
+        
         const d_cleanser = ["🍋 มะนาว", "🍊 น้ำส้ม", "🥔 ขิง", "🍃 ใบมะกรูด", "🧄 กระเทียม", "🧂 น้ำส้มสายชู", "🧂 พริกไทย", "💧 น้ำมันหอมระเหย", "🤎 น้ำมะขาม", "🌶️ พริกขี้หนู", "🍊 ส้มโอ", "🥗 ผักสด", "🌿 สมุนไพร", "🍅 มะเขือเทศ", "🍊 ส้ม", "🍹 น้ำผลไม้", "🍬 น้ำตาล", "🍛 แกงกะหรี่", "🌿 กะเพรา", "🟡 ขมิ้น"];
-
+        
         const d_tech = ["🍳 Sauté (ซอเต้)", "🍲 Boil (ต้ม)", "🥘 Simmer (เคี่ยว)", "🔥 Grill (ย่าง)", "🍗 Roast (อบ)", "🥘 Braise (ตุ๋น)", "🍳 Fry (ทอด)", "🍤 Deep Fry (ทอดน้ำมันท่วม)", "☁️ Steam (นึ่ง)", "🥦 Blanch (ลวก)", "🥚 Poach (โพช)", "🔥 Stir-fry (ผัดไฟแรง)", "🥘 Deglaze (ดีกลาซ)", "🍝 Al dente (อัล เดนเต้)", "🤤 Umami (อูมามิ)", "🥣 Marinate (หมัก)", "🧂 Seasoning (ปรุงรส)", "🍋 Zest (ขูดผิว)", "🍵 Infuse (สกัดรส)", "🧪 Acidulate (เพิ่มกรด)", "✨ Glaze (เคลือบ)", "⚖️ Balance (สมดุล)", "🔪 Julienne (ซอยเส้น)", "🔪 Chop (หั่น)", "🔪 Dice (หั่นเต๋า)", "🔪 Mince (สับละเอียด)", "🧱 Brunoise (หั่นเต๋าจิ๋ว)", "🍽️ À la carte", "🍱 Buffet", "📜 Set menu", "🍷 Tasting menu", "🍖 Carving (แกะสลัก)", "🔬 Molecular gastronomy"];
+        
+        const d_plating = ["🎨 Minimalist Plating", "🖼️ Artistic Plating", "🏺 Traditional Plating", "🥞 Stacking", "📐 Asymmetrical Plating", "🌱 Microgreens", "🌸 Edible Flowers", "🌿 Herb Sprigs", "🥔 Crisps & Chips", "🎨 Sauce Splatters", "〰️ Sauce Swirls", "⚫ Sauce Dots", "🗼 Towering", "🧩 Deconstructed", "🗿 Food Sculpture", "⬆️ Vertical Plating", "🎮 Interactive Plating", "🌈 Plating by Color", "🏡 Rustic Plating", "🌡️ Sous Vide Presentation"];
 
-        const d_plating = ["🎨 Minimalist", "🖼️ Artistic", "🏺 Traditional", "🥞 Stacking", "📐 Asymmetrical", "🌱 Microgreens", "🌸 Edible Flowers", "🌿 Herb Sprigs", "🥔 Crisps & Chips", "🎨 Sauce Splatters", "〰️ Sauce Swirls", "⚫ Sauce Dots", "🗼 Towering", "🧩 Deconstructed", "🗿 Food Sculpture", "⬆️ Vertical", "🎮 Interactive", "🌈 Plating by Color", "🏡 Rustic", "🌡️ Sous Vide Presentation"];
-
-        const d_menu_base = [
-            "🍲 Tom Yum Soup (ต้มยำ)", "🍝 Pad Thai (ผัดไทย)", "🍛 Green Curry (แกงเขียวหวาน)", "🥭 Mango Sticky Rice (ข้าวเหนียวมะม่วง)", "🥗 Som Tum (ส้มตำ)", "🌯 Spring Rolls (ปอเปี๊ยะสด)", "🍤 Crispy Spring Rolls (ปอเปี๊ยะทอด)", "🍝 Pad See Ew (ผัดซีอิ๊ว)", "🍛 Basil Fried Rice (ข้าวผัดกะเพรา)", "🥗 Spicy Papaya Salad (ส้มตำปูม้า)", "🍛 Massaman Curry (แกงมัสมั่น)", "🍛 Red Curry (แกงแดง)", "🍤 Sweet Chili Tofu (เต้าหู้ราดพริก)", "🍛 Khao Pad (ข้าวผัด)", "🥟 Fried Dumplings (เกี๊ยวทอด)", "🥗 Larb (ลาบ)", "🥣 Coconut Soup (ต้มข่า)", "🍢 Grilled Skewers (ไม้เสียบย่าง)", "🥬 Stir Fried Water Spinach (ผัดผักบุ้ง)", "🍆 Spicy Eggplant (ผัดมะเขือยาว)", "🍄 Garlic Mushrooms (ผัดเห็ดกระเทียม)", "🍜 Thai Noodles (ก๋วยเตี๋ยว)", 
-            "🥘 Paella (ปาเอย่า)", "🌯 Burritos (เบอร์ริโต้)", "🥟 Samosas (ซาโมซ่า)", "🧆 Falafel (ฟาลาเฟล)", "🍚 Risotto (รีซอตโต)", "🍕 Pizza (พิซซ่า)", "🍣 Sushi (ซูชิ)", "🍝 Pasta Primavera (พาสต้า)", "🥗 Caesar Salad (ซีซาร์สลัด)", "🥧 Shepherd’s Pie (เชฟเพิร์ดพาย)", "🌮 Tacos (ทาโก้)", "🍢 Kebabs (เคบับ)", "🍆 Eggplant Parmesan", "🥣 Chili (ชิลี)", "🍲 Goulash (กูลาช)", "🥟 Dumplings (เกี๊ยว)", "🥣 French Onion Soup", "🥯 Banh Mi (บั๋นหมี่)", "🍔 Burger (เบอร์เกอร์)"
-        ];
-
-        // Initialization
-        const meatSelect = document.getElementById('meatSelect');
-        d_meat.forEach(item => meatSelect.add(new Option(item, item)));
-
-        // Mapped Arrays [0=Meat, 1=Style, 2=Exclude, 3=Tone, 4=Target, 5=DontMask, 6=Enhance, 7=Taste, 8=Cleanse, 9=Tech, 10=Plate, 11=Menu]
+        // Map data to array for easier looping
+        // 1=Thai, 2=Inter, 3=Meat, 4=Style, 5=Exclude, 6=Tone, 7=Target, 8=Taste, 9=Enhancer, 10=Cleanser, 11=Tech, 12=Plate, 13=DontMask
         const allData = [
-            null, // 0 Meat (Handled separately)
-            d_style, // 1
-            d_exclude, // 2
-            d_tone, // 3
-            d_target, // 4
-            d_dont_mask, // 5
-            d_enhancer, // 6
-            d_taste, // 7
-            d_cleanser, // 8
-            d_tech, // 9
-            d_plating, // 10
-            d_menu_base // 11
+            null, // 0 index unused
+            d_thai, d_inter, d_meat, d_style, d_exclude, d_tone, d_target, d_flavor, d_enhancer, d_cleanser, d_tech, d_plating, d_dont_mask
         ];
-
-        let isLocked = Array(12).fill(false);
-        let currentResults = Array(12).fill("...");
-
-        function toggleLock(index) {
-            isLocked[index] = !isLocked[index];
-            const btn = document.getElementById(`lock${index}`);
-            const box = document.getElementById(`box${index}`);
-            
-            if (isLocked[index]) {
-                btn.innerText = "🔒";
-                box.classList.add("locked");
-            } else {
-                btn.innerText = "🔓";
-                box.classList.remove("locked");
-            }
-        }
 
         function spin() {
-            const btn = document.getElementById('spinBtn');
-            btn.disabled = true;
-            btn.innerText = "⏳ กำลังประมวลผล...";
-
-            // 1. Handle Meat (Box 0)
-            if (meatSelect.value === "random") {
-                const randomMeat = d_meat[Math.floor(Math.random() * d_meat.length)];
-                currentResults[0] = randomMeat;
-            } else {
-                currentResults[0] = meatSelect.value;
+            // Animate each box
+            for(let i=1; i<=12; i++) { // Loop 1-12 based on DOM IDs I set below (Wait, let's map IDs correctly)
+                // Mapping:
+                // s1=Thai, s2=Inter, s3=Meat, s4=Style, s11=Tech, s12=Plate, s8=Taste, s9=Enhancer, s10=Cleanser, s6=Mood, s5=Exclude, s8_2=DontMask, s7=Target
+                
+                animateBox('s1', d_thai);
+                animateBox('s2', d_inter);
+                animateBox('s3', d_meat);
+                animateBox('s4', d_style);
+                animateBox('s11', d_tech);
+                animateBox('s12', d_plating);
+                animateBox('s8', d_flavor);
+                animateBox('s9', d_enhancer);
+                animateBox('s10', d_cleanser);
+                animateBox('s6', d_tone);
+                animateBox('s5', d_exclude);
+                animateBox('s8_2', d_dont_mask);
+                animateBox('s7', d_target);
             }
 
-            // 2. Handle Random Boxes (1-11)
-            let completed = 0;
-            for (let i = 1; i <= 11; i++) {
-                if (isLocked[i]) {
-                    if(currentResults[i] === "...") {
-                         // Fallback if locked but empty
-                         currentResults[i] = allData[i][Math.floor(Math.random() * allData[i].length)];
-                         document.getElementById(`s${i}`).innerText = currentResults[i];
-                    }
-                    completed++;
-                    continue;
-                }
-
-                const el = document.getElementById(`s${i}`);
-                const data = allData[i];
-                let speed = 50;
-
-                const interval = setInterval(() => {
-                    el.innerText = data[Math.floor(Math.random() * data.length)];
-                }, speed);
-
-                setTimeout(() => {
-                    clearInterval(interval);
-                    const finalVal = data[Math.floor(Math.random() * data.length)];
-                    el.innerText = finalVal;
-                    currentResults[i] = finalVal;
-                }, 400 + (i * 100));
-            }
-
-            setTimeout(() => {
-                btn.disabled = false;
-                btn.innerText = "🚀 GENERATE";
-                updateSentence();
-            }, 400 + (11 * 100) + 200);
+            setTimeout(generateSentence, 600);
         }
 
-        function updateSentence() {
-            // Ensure meat is updated if changed manually
-            if (meatSelect.value !== "random") currentResults[0] = meatSelect.value;
-            if (currentResults[1] === "...") return;
+        function animateBox(id, dataArray) {
+            const el = document.getElementById(id);
+            let counter = 0;
+            const interval = setInterval(() => {
+                el.innerText = dataArray[Math.floor(Math.random() * dataArray.length)];
+                counter++;
+                if(counter > 10) clearInterval(interval);
+            }, 50);
+        }
 
-            const c = currentResults.map(text => text ? text.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '').trim() : "");
+        function generateSentence() {
+            // Get values from DOM to ensure sync
+            const get = (id) => document.getElementById(id).innerText;
             
-            // Indices:
-            // 0:Meat, 1:Style, 2:Exclude, 3:Tone, 4:Target, 5:DontMask, 
-            // 6:Enhance, 7:Taste, 8:Cleanse, 9:Tech, 10:Plate, 11:Menu
+            const thai = get('s1');
+            const inter = get('s2');
+            const meat = get('s3');
+            const style = get('s4');
+            const tech = get('s11');
+            const plate = get('s12');
+            const taste = get('s8');
+            const enhance = get('s9');
+            const cleanse = get('s10');
+            const mood = get('s6');
+            const no = get('s5');
+            const dont = get('s8_2');
+            const target = get('s7');
 
-            const sentence = `🧑‍🍳 **โจทย์ฟิวชั่นวันนี้**: นำ **${c[0]}** มาทำเมนู **${c[11]}** ในสไตล์ **${c[1]}** โดยใช้เทคนิค **${c[9]}** และจัดจานแบบ **${c[10]}**\n\n👅 **รสชาติ**: รสหลัก **${c[7]}** (โทน ${c[3]}) ชูรสด้วย **${c[6]}** ตัดเลี่ยนด้วย **${c[8]}**\n🎯 **กลุ่มเป้าหมาย**: **${c[4]}**\n⚠️ **เงื่อนไข**: ห้ามใส่ **${c[2]}** และห้ามกลิ่น **${c[5]}** กลบวัตถุดิบ`;
-            
-            document.getElementById('finalSentence').innerHTML = sentence.replace(/\n/g, '<br>');
-            document.getElementById('finalSentence').dataset.raw = sentence.replace(/<br>/g, '\n');
+            const sentence = `🔥 **Fusion Challenge**: สร้างสรรค์เมนูฟิวชั่นระหว่าง **${thai}** ผสมผสานกับ **${inter}** โดยใช้วัตถุดิบหลักคือ **${meat}**\n\n👨‍🍳 **Execution**: ปรุงในสไตล์ **${style}** ใช้เทคนิค **${tech}** และนำเสนอแบบ **${plate}**\n👅 **Flavor Profile**: รสหลัก **${taste}** (โทน ${mood}) ชูรสด้วย **${enhance}** และตัดเลี่ยนด้วย **${cleanse}**\n🎯 **Target**: เสิร์ฟให้ **${target}**\n⚠️ **เงื่อนไข**: ห้ามใส่ **${no}** และห้ามกลิ่น **${dont}** กลบวัตถุดิบ`;
+
+            document.getElementById('finalSentence').innerText = sentence;
         }
 
         function copyText() {
-            const rawText = document.getElementById('finalSentence').dataset.raw || document.getElementById('finalSentence').innerText;
-            if (rawText.includes("กดปุ่ม")) return;
-            navigator.clipboard.writeText(rawText).then(() => alert("คัดลอกโจทย์เรียบร้อย! 📋"));
+            const text = document.getElementById('finalSentence').innerText;
+            if (text.includes("พร้อมแล้ว")) {
+                alert("กรุณากด Random ก่อนครับ");
+                return;
+            }
+            navigator.clipboard.writeText(text).then(() => {
+                alert("คัดลอกโจทย์เรียบร้อย! 📋");
+            });
         }
     </script>
 </body>
 </html>
-
-```
